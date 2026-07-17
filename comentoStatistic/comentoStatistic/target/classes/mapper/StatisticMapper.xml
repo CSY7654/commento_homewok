@@ -5,17 +5,54 @@
 
 <mapper namespace="com.demo.comentoStatistic.dao.StatisticMapper">
 
+    <!-- 년도 접속 기록 -->
     <select id="selectYearLogin" parameterType="string" resultType="YearCountDto">
         select concat('20', #{year}) as year, count(*) as totCnt
         from statistic.request_info ri
         where left(ri.create_date, 2) = #{year};
     </select>
 
-
+    <!-- 년 월 접속 기록 -->
     <select id="selectYearMonthLogin" parameterType="string" resultType="YearMonthCountDto">
         select concat('20', #{yearMonth}) as yearMonth, count(*) as totCnt
         from statistic.request_info ri
         where left(ri.create_date, 4) = #{yearMonth};
+    </select>
+
+    <!-- 년 월 일 접속 기록 -->
+    <select id="selectYearMonthDayLogin" parameterType="string" resultType="DailyLoginCountDto">
+        select concat('20', #{yearMonthDay}) as yearMonthDay, count(*) as totCnt
+        from statistic.request_info ri
+        where left(ri.create_date, 6) = #{yearMonthDay};
+    </select>
+
+    <!-- 1. 월별 접속 기록 -->
+    <select id="selectMonthlyLoginStats" resultType="YearMonthCountDto">
+        select
+            substr(ri.create_date, 1, 4) as yearMonth,
+            count(*) as totCnt
+        from statistic.request_info ri
+        group by substr(ri.create_date, 1, 4)
+        order by yearMonth
+    </select>
+
+    <!--2. 일자별 접속 기록 -->
+    <select id="selectDailyLoginStats" resultType="DailyLoginCountDto">
+        select
+            substr(ri.create_date, 1, 6) as yearMonthDay,
+            count(*) as totCnt
+        from statistic.request_info ri
+        group by substr(ri.create_date, 1, 6)
+        order by yearMonthDay
+    </select>
+
+    <!-- 3. 평균 하루 로그인 수-->
+    <select id="selectDailyMeanLoginCount" resultType="DailyMeanCountDto">
+        select
+        count(*) as totalCount,
+        count(distinct substr(ri.create_date, 1, 8)) as totalDays,
+        round(count(*) / count(distinct substr(ri.create_date, 1, 8)), 2) as meanCount
+        from statistic.request_info ri;
     </select>
 
 </mapper>
