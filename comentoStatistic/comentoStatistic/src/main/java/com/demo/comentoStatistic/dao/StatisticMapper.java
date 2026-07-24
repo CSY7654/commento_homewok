@@ -1,13 +1,11 @@
 package com.demo.comentoStatistic.dao;
 
 
-import com.demo.comentoStatistic.dto.DailyLoginCountDto;
-import com.demo.comentoStatistic.dto.DailyMeanCountDto;
-import com.demo.comentoStatistic.dto.YearCountDto;
-import com.demo.comentoStatistic.dto.YearMonthCountDto;
+import com.demo.comentoStatistic.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
@@ -26,5 +24,8 @@ public interface StatisticMapper {
     List<DailyLoginCountDto> selectDailyLoginStats();
     // 3. 평균 접속자 수 출력
     DailyMeanCountDto selectDailyMeanLoginCount();
+    // 4) 휴일 제외 로그인 수
+    List<DayTypeCountDto> selectLoginCountByDayType(Map<String, Object> params);
+
 
 }

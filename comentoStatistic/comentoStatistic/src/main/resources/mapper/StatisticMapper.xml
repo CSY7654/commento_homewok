@@ -55,30 +55,28 @@
         from statistic.request_info ri;
     </select>
 
-    <!-- 4. 휴일을 제외한 로그인 수  (외부 공휴일 API 연동)  -->
+    <!-- 4) 휴일 제외 로그인 수 : SUBSTR + UNION (외부 공휴일 API 연동, 특정 연월로 범위 제한) -->
     <select id="selectLoginCountByDayType" parameterType="map" resultType="DayTypeCountDto">
         select 'WEEKDAY' as dayType, count(*) as totCnt
         from statistic.request_info ri
-        <where>
-            <if test="holidayList != null and holidayList.size() > 0">
-                substr(ri.create_date, 1, 6) not in
-                <foreach collection="holidayList" item="holiday" open="(" separator="," close=")">
-                    #{holiday}
-                </foreach>
-            </if>
-        </where>
+        where substr(ri.create_date, 1, 4) = #{yearMonth}
+        <if test="holidayList != null and holidayList.size() > 0">
+            and substr(ri.create_date, 1, 6) not in
+            <foreach collection="holidayList" item="holiday" open="(" separator="," close=")">
+                #{holiday}
+            </foreach>
+        </if>
 
         union all
 
         select 'HOLIDAY' as dayType, count(*) as totCnt
         from statistic.request_info ri
-        <where>
-            <if test="holidayList != null and holidayList.size() > 0">
-                substr(ri.create_date, 1, 6) in
-                <foreach collection="holidayList" item="holiday" open="(" separator="," close=")">
-                    #{holiday}
-                </foreach>
-            </if>
-        </where>
+        where substr(ri.create_date, 1, 4) = #{yearMonth}
+        <if test="holidayList != null and holidayList.size() > 0">
+            and substr(ri.create_date, 1, 6) in
+            <foreach collection="holidayList" item="holiday" open="(" separator="," close=")">
+                #{holiday}
+            </foreach>
+        </if>
     </select>
 </mapper>

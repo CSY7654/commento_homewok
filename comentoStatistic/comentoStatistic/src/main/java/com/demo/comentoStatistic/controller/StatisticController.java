@@ -1,9 +1,6 @@
 package com.demo.comentoStatistic.controller;
 
-import com.demo.comentoStatistic.dto.DailyLoginCountDto;
-import com.demo.comentoStatistic.dto.DailyMeanCountDto;
-import com.demo.comentoStatistic.dto.YearCountDto;
-import com.demo.comentoStatistic.dto.YearMonthCountDto;
+import com.demo.comentoStatistic.dto.*;
 import com.demo.comentoStatistic.service.StatisticService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,4 +55,11 @@ public class StatisticController
     public ResponseEntity<DailyMeanCountDto> getDailyMeanCount()
     { return  ResponseEntity.ok(statisticService.getDailyMeanLoginCount()); }
 
+    // 4) 휴일 제외 로그인 수 (외부 API 연동)
+    @RequestMapping(value = "/api/v1/stats/by-day-type/{year}/{month}", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<List<DayTypeCountDto>> getLoginCountByDayType(
+            @PathVariable("year") String year, @PathVariable("month") String month) {
+        return ResponseEntity.ok(statisticService.getLoginCountByDayType(year, month));
+    }
 }
